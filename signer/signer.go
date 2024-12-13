@@ -78,7 +78,7 @@ func (s *Signer) SignMessage(data string, scope constant.IntentScope) (*SignedMe
 }
 
 func (s *Signer) SignTransaction(b64TxBytes string) (*models.SignedTransactionSerializedSig, error) {
-	result, err := s.SignMessage(b64TxBytes, constant.PersonalMessageIntentScope)
+	result, err := s.SignMessage(b64TxBytes, constant.TransactionDataIntentScope)
 	if err != nil {
 		return nil, err
 	}

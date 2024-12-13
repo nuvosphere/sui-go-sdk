@@ -5,8 +5,9 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
-
+	"github.com/block-vision/sui-go-sdk/models"
 	"github.com/machinebox/graphql"
+
 	"golang.org/x/crypto/blake2b"
 
 	"github.com/block-vision/sui-go-sdk/constant"
@@ -26,33 +27,28 @@ func (e *Ed25519PublicKey) ToSuiAddress() string {
 	return ""
 }
 
-func (e *Ed25519PublicKey) VerifyPersonalMessage(message []byte, signature []byte, client *graphql.Client) (bool, error) {
+func (e *Ed25519PublicKey) VerifyPersonalMessage(message []byte, signature string, client *graphql.Client) (bool, error) {
 	b64Message := base64.StdEncoding.EncodeToString([]byte(message))
 	return VerifyMessage(b64Message, signature, constant.PersonalMessageIntentScope)
 }
 
-func VerifyMessage(message, signature string, scope constant.IntentScope) (signer string, pass bool, err error) {
+func VerifyMessage(message, signature string, scope constant.IntentScope) (pass bool, err error) {
 	b64Bytes, _ := base64.StdEncoding.DecodeString(message)
-	messageBytes := NewMessageWithIntent(b64Bytes, scope)
+	messageBytes := models.NewMessageWithIntent(b64Bytes, scope)
 
-	serializedSignature, err := FromSerializedSignature(signature)
+	serializedSignature, err := models.FromSerializedSignature(signature)
 	if err != nil {
-		return "", false, err
+		return false, err
 	}
 	digest := blake2b.Sum256(messageBytes)
 
 	pass = ed25519.Verify(serializedSignature.PubKey[:], digest[:], serializedSignature.Signature)
 
-	signer = Ed25519PublicKeyToSuiAddress(serializedSignature.PubKey)
-	if err != nil {
-		return "", false, fmt.Errorf("invalid signer %v", err)
-	}
-
-	return
+	return pass, nil
 }
 
 func Ed25519PublicKeyToSuiAddress(pubKey []byte) string {
-	newPubkey := []byte{byte(SigFlagEd25519)}
+	newPubkey := []byte{byte(models.SigFlagEd25519)}
 	newPubkey = append(newPubkey, pubKey...)
 
 	addrBytes := blake2b.Sum256(newPubkey)

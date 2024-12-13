@@ -18,7 +18,7 @@ func VerifyPersonalMessageSignature(message []byte, signature []byte, options *z
 		return "", false, err
 	}
 
-	pass, err = publicKey.VerifyPersonalMessage(message, parsedSignature.Signature, options.Client)
+	pass, err = publicKey.VerifyPersonalMessage(message, string(parsedSignature.Signature), options.Client) //todo
 	if err != nil {
 		return "", false, err
 	}

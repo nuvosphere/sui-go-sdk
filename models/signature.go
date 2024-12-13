@@ -114,7 +114,7 @@ var IntentBytes = []byte{0, 0, 0}
 
 func (txn *TxnMetaData) SignSerializedSigWith(privateKey ed25519.PrivateKey) *SignedTransactionSerializedSig {
 	txBytes, _ := base64.StdEncoding.DecodeString(txn.TxBytes)
-	message := messageWithIntent(txBytes)
+	message := MessageWithIntent(txBytes)
 	digest := blake2b.Sum256(message)
 	var noHash crypto.Hash
 	sigBytes, err := privateKey.Sign(nil, digest[:], noHash)
@@ -127,7 +127,7 @@ func (txn *TxnMetaData) SignSerializedSigWith(privateKey ed25519.PrivateKey) *Si
 	}
 }
 
-func messageWithIntent(message []byte) []byte {
+func MessageWithIntent(message []byte) []byte {
 	intent := IntentBytes
 	intentMessage := make([]byte, len(intent)+len(message))
 	copy(intentMessage, intent)

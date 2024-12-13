@@ -51,10 +51,11 @@ func (p *ZkLoginPublicIdentifier) ToSuiAddress() string {
 	// );
 
 	// Convert the public identifier to a Sui address
-	return "0x" + mystenbcs.ToHex(mystenbcs.Blake2b(p.toSuiBytes(), 32))[:40]
+	//return "0x" + mystenbcs.ToHex(mystenbcs.Blake2b(p.toSuiBytes(), 32))[:40]
+	panic("todo")
 }
 
-func (pk *ZkLoginPublicIdentifier) VerifyPersonalMessage(message []byte, signature []byte, client *graphql.Client) (bool, error) {
+func (pk *ZkLoginPublicIdentifier) VerifyPersonalMessage(message []byte, signature string, client *graphql.Client) (bool, error) {
 	// Parse the serialized zkLogin signature
 	parsedSignature, err := ParseSerializedZkLoginSignature(signature)
 	if err != nil {
